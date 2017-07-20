@@ -11,7 +11,6 @@ namespace ThreadStarvationDemo
     class Program
     {
         /*
-        
         1. Run a few threads (start with 3 threads). 
 
         2. Each thread is to acquire one mutex to write a line to its own text file.
@@ -36,7 +35,6 @@ namespace ThreadStarvationDemo
 
         6. We can later evolve the program further to show how starvation can cause more undesireable 
         effects. 
-
         */
 
         private const string FILEPATH = @"D:\David\test\";
@@ -83,18 +81,25 @@ namespace ThreadStarvationDemo
             string str_Filepath = (string)obj;
 
             bool b_MutexAcquired = false;
+            int count = 0;
 
             try
             {
                 while (true)
                 {
+                    count++;
+
                     b_MutexAcquired = AcquireMutex();
 
-                    File.AppendAllText(str_Filepath, "Thread "
-                        + Thread.CurrentThread.ManagedThreadId + " has the Mutex."
+                    File.AppendAllText(str_Filepath, 
+                        count + ". Thread "
+                        + Thread.CurrentThread.ManagedThreadId + " has the Mutex. "
+                        + "Priority : " + Thread.CurrentThread.Priority
                         + "\r\n");
 
                     ReleaseMutex();
+
+                    b_MutexAcquired = false;
                 }
             }
             catch (ThreadAbortException taex)
