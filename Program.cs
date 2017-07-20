@@ -10,49 +10,20 @@ namespace ThreadStarvationDemo
 {
     class Program
     {
-        /*
-        1. Run a few threads (start with 3 threads). 
-
-        2. Each thread is to acquire one mutex to write a line to its own text file.
-
-        - The line is to include the thread's ID.
-        - Note that each thread has its own text file.
-        - Hence do not make the threads share one single thread method.
-        - Remember that there is only one mutex shared by all threads.
-
-        3. Each thread is to contain try/catch/finally blocks and each thread to handle 
-        the thread abort exception.
-
-        4. Set one thread to have the lowest priority. 
-
-        5. The main thread to start all threads and then itself sleep for a period of time 
-        (maybe 5 seconds) while the worker threads do their job. 
-
-        - At the end of the 5 seconds, abort all threads.
-        - Explain that even if a thread is waiting on a mutex, it can be aborted as well.
-        - Show that there are 3 text files and that the text file written by the lowest priority 
-        thread has the least number of lines.
-
-        6. We can later evolve the program further to show how starvation can cause more undesireable 
-        effects. 
-        */
+        // TODO: Comments
 
         private const string FILEPATH = @"D:\David\test\";
 
         static void Main(string[] args)
         {
+            m_bContinue = true;
+
             StartThread01();
             StartThread02();
             StartThread03();
 
-            Thread.Sleep(5000);
-
-            Thread[] threads = new Thread[] { m_thread_01, m_thread_02, m_thread_03 };
-
-            for (int i = 0; i < threads.Length; i++)
-            {
-                AbortThread(ref threads[i]);
-            }
+            Thread.Sleep(60000 * 5);
+            m_bContinue = false;
         }
 
         static void StartThread01()
@@ -85,27 +56,13 @@ namespace ThreadStarvationDemo
 
             try
             {
-                while (true)
+                while (m_bContinue)
                 {
-                    count++;
-
                     b_MutexAcquired = AcquireMutex();
-
-                    File.AppendAllText(str_Filepath, 
-                        count + ". Thread "
-                        + Thread.CurrentThread.ManagedThreadId + " has the Mutex. "
-                        + "Priority : " + Thread.CurrentThread.Priority
-                        + "\r\n");
-
+                    count++;
                     ReleaseMutex();
-
                     b_MutexAcquired = false;
                 }
-            }
-            catch (ThreadAbortException taex)
-            {
-                Console.WriteLine("Thread [{0:D}] has been aborted.",
-                    Thread.CurrentThread.ManagedThreadId);
             }
             catch (Exception ex)
             {
@@ -118,13 +75,13 @@ namespace ThreadStarvationDemo
                 {
                     ReleaseMutex();
                 }
+
+                File.AppendAllText(str_Filepath,
+                    "Count : " + count);
             }
         }
 
-        static void AbortThread(ref Thread thread)
-        {
-            thread.Abort();
-        }
+
 
         static bool AcquireMutex()
         {
@@ -140,5 +97,6 @@ namespace ThreadStarvationDemo
         private static Thread m_thread_02 = null;
         private static Thread m_thread_03 = null;
         private static Mutex m_mutex = new Mutex(false);
+        private static bool m_bContinue = false;
     }
 }
