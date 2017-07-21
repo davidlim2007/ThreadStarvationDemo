@@ -23,7 +23,7 @@ namespace ThreadStarvationDemo
             // (5 minutes in this case).
             //
             // The longer the threads run, the more
-            // considerable the results yielded.
+            // accurate the results yielded.
             Thread.Sleep(60000 * 5);
 
             // Once the main thread has finished
