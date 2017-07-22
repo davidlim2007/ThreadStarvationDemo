@@ -17,14 +17,16 @@ namespace ThreadStarvationDemo
             StartThread01();
             StartThread02();
             StartThread03();
+            StartThread04();
+            StartThread05();
 
             // The threads need to run for
             // a considerable amount of time
-            // (5 minutes in this case).
+            // (10 minutes in this case).
             //
             // The longer the threads run, the more
             // accurate the results yielded.
-            Thread.Sleep(60000 * 5);
+            Thread.Sleep(60000 * 10);
 
             // Once the main thread has finished
             // its sleep, set m_bContinue to false
@@ -44,10 +46,10 @@ namespace ThreadStarvationDemo
         {
             m_thread_01 = new Thread(new ParameterizedThreadStart(WorkerThreadMethod));
 
-            // The priority of thread 01 is set to Highest.
+            // Threads 01 - 04 are given the Highest priority.
             //
-            // This grants it the most CPU time to perform
-            // its tasks.
+            // This grants them the most CPU time to perform
+            // their tasks.
             m_thread_01.Priority = ThreadPriority.Highest;
             m_thread_01.Start(FILEPATH + "test_01.txt");
         }
@@ -55,26 +57,34 @@ namespace ThreadStarvationDemo
         static void StartThread02()
         {
             m_thread_02 = new Thread(new ParameterizedThreadStart(WorkerThreadMethod));
-
-            // The priority of thread 02 is set to Normal.
-            //
-            // The CPU time granted to it to perform its
-            // tasks is hence lower than that granted
-            // to thread 01.
-            m_thread_02.Priority = ThreadPriority.Normal;
+            m_thread_02.Priority = ThreadPriority.Highest;
             m_thread_02.Start(FILEPATH + "test_02.txt");
         }
 
         static void StartThread03()
         {
             m_thread_03 = new Thread(new ParameterizedThreadStart(WorkerThreadMethod));
+            m_thread_03.Priority = ThreadPriority.Highest;
+            m_thread_03.Start(FILEPATH + "test_03.txt");
+        }
 
-            // The priority of thread 03 is set to Lowest.
+        static void StartThread04()
+        {
+            m_thread_04 = new Thread(new ParameterizedThreadStart(WorkerThreadMethod));            
+            m_thread_04.Priority = ThreadPriority.Highest;
+            m_thread_04.Start(FILEPATH + "test_04.txt");
+        }
+
+        static void StartThread05()
+        {
+            m_thread_05 = new Thread(new ParameterizedThreadStart(WorkerThreadMethod));
+
+            // The priority of thread 05 is set to Lowest.
             //
             // This grants it the least CPU time to perform
             // its tasks.
-            m_thread_03.Priority = ThreadPriority.Lowest;
-            m_thread_03.Start(FILEPATH + "test_03.txt");
+            m_thread_05.Priority = ThreadPriority.Lowest;
+            m_thread_05.Start(FILEPATH + "test_05.txt");
         }
 
         static void WorkerThreadMethod(object obj)
@@ -158,6 +168,8 @@ namespace ThreadStarvationDemo
         private static Thread m_thread_01 = null;
         private static Thread m_thread_02 = null;
         private static Thread m_thread_03 = null;
+        private static Thread m_thread_04 = null;
+        private static Thread m_thread_05 = null;
 
         private static Mutex m_mutex = new Mutex(false);
 
